@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operational Logic & Information Validation Interface Application</title>
+    <title>Operational Logic & Information Validation Interface Application | PayFoneMap</title>
     <!-- Tailwind CSS for rapid styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons for UI elements -->
@@ -75,10 +75,13 @@
         }
         /* Map styling */
         #booth-map {
-            height: 400px; 
+            height: 300px; 
             width: 100%;
             border-radius: 1rem;
             z-index: 10;
+        }
+        @media (min-width: 768px) {
+            #booth-map { height: 400px; }
         }
         .leaflet-container {
             background: #1e293b;
@@ -114,9 +117,14 @@
         body.canada-mode h1, body.canada-mode h2, body.canada-mode h3, body.canada-mode h4 { color: #ff0000 !important; }
         body.canada-mode button { background-color: #ff0000 !important; color: #fff !important; }
         body.canada-mode input, body.canada-mode select, body.canada-mode textarea { background-color: #fff !important; border-color: #ff0000 !important; color: #000 !important; }
+
+        /* Sidebar Responsive Transition */
+        #main-sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="flex h-screen overflow-hidden flex-col md:flex-row">
 
     <!-- Custom Notification Modal -->
     <div id="system-notification" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md opacity-0 pointer-events-none">
@@ -130,9 +138,28 @@
         </div>
     </div>
 
+    <!-- Mobile Header -->
+    <header class="h-16 border-b border-slate-800 bg-slate-900/50 backdrop-blur flex items-center px-4 justify-between md:hidden shrink-0 z-50">
+        <div class="flex items-center gap-3">
+            <img src="https://raw.githubusercontent.com/payphonemapper/webimages/refs/heads/main/pfm-liv.png" alt="Logo" class="h-8 w-auto">
+            <h2 id="mobile-tool-title" class="text-xs font-bold text-white uppercase tracking-widest truncate max-w-[150px]">LIV</h2>
+        </div>
+        <button onclick="toggleSidebar()" class="p-2 text-slate-300 hover:text-white transition-colors">
+            <i data-lucide="menu"></i>
+        </button>
+    </header>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden hidden transition-opacity duration-300"></div>
+
     <!-- Sidebar Navigation -->
-    <aside class="w-64 bg-slate-800 border-r border-slate-700 flex flex-col transition-all duration-300 shrink-0">
-        <div class="p-6 border-b border-slate-700 sidebar-header flex flex-col items-center text-center">
+    <aside id="main-sidebar" class="fixed inset-y-0 left-0 w-64 bg-slate-800 border-r border-slate-700 flex flex-col z-[70] transform -translate-x-full md:translate-x-0 md:static shrink-0">
+        <div class="p-6 border-b border-slate-700 sidebar-header flex flex-col items-center text-center relative">
+            <!-- Mobile Close Button -->
+            <button onclick="toggleSidebar()" class="absolute top-4 right-4 text-slate-500 hover:text-white md:hidden">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
             <img src="https://raw.githubusercontent.com/payphonemapper/webimages/refs/heads/main/pfm-liv.png" 
                  alt="PayFoneMap LIV" 
                  class="w-[85%] h-auto logo-img mb-4">
@@ -176,20 +203,20 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col bg-slate-900 overflow-hidden relative">
-        <header class="h-16 border-b border-slate-800 bg-slate-900/50 backdrop-blur flex items-center px-10 justify-between shrink-0">
+        <header class="h-16 border-b border-slate-800 bg-slate-900/50 backdrop-blur flex items-center px-6 md:px-10 justify-between shrink-0 hidden md:flex">
             <h2 id="current-tool-title" class="text-lg font-bold text-white uppercase tracking-widest" data-i18n="nav-dashboard">System Overview</h2>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-10 pb-20">
+        <div class="flex-1 overflow-y-auto p-4 md:p-10 pb-20">
             
             <!-- Dashboard Section -->
             <section id="dashboard" class="tool-section active max-w-5xl mx-auto">
-                <div class="bg-slate-800/50 border border-slate-700 rounded-3xl p-10 mb-10 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-10 opacity-10 pointer-events-none">
+                <div class="bg-slate-800/50 border border-slate-700 rounded-3xl p-6 md:p-10 mb-6 md:mb-10 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-10 opacity-10 pointer-events-none hidden md:block">
                         <i data-lucide="server-cog" class="w-48 h-48"></i>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-4" data-i18n="dash-welcome">Welcome to Operational Logic & Information Validation Interface Application</h3>
-                    <p class="text-slate-400 text-lg mb-8 max-w-2xl" data-i18n="dash-desc">
+                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-4" data-i18n="dash-welcome">Welcome to Operational Logic & Information Validation Interface Application</h3>
+                    <p class="text-slate-400 text-md md:text-lg mb-8 max-w-2xl" data-i18n="dash-desc">
                         A localized, secure toolkit for managing, interpreting, and validating PayFoneMap operational assets.
                     </p>
                     <div class="flex gap-4">
@@ -199,7 +226,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                     <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-sm">
                         <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center mb-5">
                             <i data-lucide="binary" class="w-6 h-6"></i>
@@ -233,7 +260,7 @@
 
             <!-- Booth ID Decoder Section -->
             <section id="decoder" class="tool-section max-w-4xl mx-auto">
-                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 mb-8">
+                <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 md:p-8 mb-8">
                     <h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-3">
                         <i data-lucide="scan-line" class="w-6 h-6 text-blue-400"></i> <span data-i18n="decoder-title">String Decoder</span>
                     </h3>
@@ -242,20 +269,20 @@
                         <br/><span class="opacity-75"><span data-i18n="decoder-help-2">Expected format:</span> <code>[COUNTRY]-[PROVINCE/STATE]-[CITY]-[ID]</code></span>
                     </p>
 
-                    <div class="flex gap-4">
+                    <div class="flex flex-col sm:flex-row gap-4">
                         <input type="text" id="booth-input" list="booth-id-list" placeholder="e.g. CA-ON-TOR-12345" 
                                class="flex-1 bg-slate-900 border border-slate-600 rounded-xl px-5 py-4 text-white text-lg code-font focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all uppercase">
                         <datalist id="booth-id-list"></datalist>
-                        <button onclick="processDecoder()" class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-xl font-bold text-md transition-colors flex items-center gap-3 shrink-0 shadow-lg shadow-blue-900/20">
+                        <button onclick="processDecoder()" class="bg-blue-600 hover:bg-blue-500 text-white px-10 py-4 rounded-xl font-bold text-md transition-colors flex items-center justify-center gap-3 shrink-0 shadow-lg shadow-blue-900/20">
                             <i data-lucide="cpu" class="w-5 h-5"></i> <span data-i18n="decoder-btn">Decode</span>
                         </button>
                     </div>
                 </div>
 
-                <div id="decoder-output" class="hidden space-y-8">
-                    <div class="flex justify-between items-center bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+                <div id="decoder-output" class="hidden space-y-6 md:space-y-8">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-800/50 p-4 rounded-2xl border border-slate-700 gap-4">
                         <h4 class="text-sm font-bold text-slate-400 uppercase tracking-widest" data-i18n="decoder-results">Telemetry Results</h4>
-                        <button id="fav-toggle-btn" onclick="toggleCurrentBoothFav()" class="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-bold text-sm">
+                        <button id="fav-toggle-btn" onclick="toggleCurrentBoothFav()" class="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-bold text-sm w-full sm:w-auto justify-center">
                             <i data-lucide="star" class="w-4 h-4"></i>
                             <span data-i18n="btn-fav-add">Add to Favourites</span>
                         </button>
@@ -263,7 +290,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="decoder-cards"></div>
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
                         <div class="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-3xl overflow-hidden p-1 shadow-2xl">
                             <div class="px-6 py-3 border-b border-slate-700 bg-slate-800/50 flex items-center justify-between">
                                 <span class="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-3">
@@ -273,15 +300,15 @@
                             </div>
                             <div id="booth-map"></div>
                         </div>
-                        <div class="bg-slate-800 border border-slate-700 rounded-3xl p-8 flex flex-col justify-center shadow-xl">
+                        <div class="bg-slate-800 border border-slate-700 rounded-3xl p-6 md:p-8 flex flex-col justify-center shadow-xl">
                             <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4" data-i18n="card-loc-desc">Location Description</h4>
                             <p id="booth-desc-text" class="text-lg text-slate-200 leading-relaxed italic font-medium"></p>
                         </div>
                     </div>
-                    <div id="raw-dump-container" class="bg-slate-900 border border-slate-700 rounded-2xl p-8 relative overflow-hidden shadow-inner">
+                    <div id="raw-dump-container" class="bg-slate-900 border border-slate-700 rounded-2xl p-6 md:p-8 relative overflow-hidden shadow-inner">
                         <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
                         <h4 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-5" data-i18n="decoder-raw">Raw Data Dump</h4>
-                        <pre id="decoder-json" class="code-font text-sm text-emerald-400 bg-black/50 p-6 rounded-xl overflow-x-auto border border-emerald-900/30"></pre>
+                        <pre id="decoder-json" class="code-font text-xs md:text-sm text-emerald-400 bg-black/50 p-4 md:p-6 rounded-xl overflow-x-auto border border-emerald-900/30"></pre>
                     </div>
                 </div>
 
@@ -294,14 +321,14 @@
             <!-- FoneLine Section -->
             <section id="foneline" class="tool-section max-w-5xl mx-auto">
                 <div class="bg-slate-800 border border-slate-700 rounded-3xl overflow-hidden shadow-xl border-red-500/20">
-                    <div class="p-8 border-b border-slate-700 flex justify-between items-center bg-red-500/5">
+                    <div class="p-6 md:p-8 border-b border-slate-700 flex justify-between items-center bg-red-500/5">
                         <h3 class="text-xl font-bold text-white flex items-center gap-3">
                             <i data-lucide="phone-forwarded" class="w-6 h-6 text-red-500"></i> <span data-i18n="foneline-title">Emergency Line Directory</span>
                         </h3>
                     </div>
-                    <div class="p-4 overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-700">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left min-w-[600px]">
+                            <thead class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-700 bg-slate-900/20">
                                 <tr>
                                     <th class="px-6 py-4" data-i18n="card-uid">UID</th>
                                     <th class="px-6 py-4" data-i18n="card-country">Country</th>
@@ -321,14 +348,14 @@
             <!-- Favourites Section -->
             <section id="favourites" class="tool-section max-w-5xl mx-auto">
                 <div class="bg-slate-800 border border-slate-700 rounded-3xl overflow-hidden shadow-xl">
-                    <div class="p-8 border-b border-slate-700 flex justify-between items-center bg-slate-800/50">
+                    <div class="p-6 md:p-8 border-b border-slate-700 flex justify-between items-center bg-slate-800/50">
                         <h3 class="text-xl font-bold text-white flex items-center gap-3">
                             <i data-lucide="star" class="w-6 h-6 text-amber-400"></i> <span data-i18n="fav-title">Favourite Assets</span>
                         </h3>
                     </div>
-                    <div class="p-4 overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-700">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left min-w-[600px]">
+                            <thead class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-slate-700 bg-slate-900/20">
                                 <tr>
                                     <th class="px-6 py-4" data-i18n="card-uid">UID</th>
                                     <th class="px-6 py-4" data-i18n="card-country">Country</th>
@@ -347,18 +374,18 @@
 
             <!-- Settings Section -->
             <section id="settings" class="tool-section max-w-4xl mx-auto">
-                <div class="space-y-8">
+                <div class="space-y-6 md:space-y-8">
                     <!-- Language Selection -->
-                    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 shadow-xl">
+                    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 md:p-8 shadow-xl">
                         <h3 class="text-xl font-semibold text-white mb-6 flex items-center gap-3">
                             <i data-lucide="languages" class="w-6 h-6 text-orange-400"></i> <span data-i18n="settings-lang-title">Language Selection</span>
                         </h3>
-                        <div class="flex items-center justify-between p-5 bg-slate-900/50 rounded-xl">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 bg-slate-900/50 rounded-xl gap-4">
                             <div>
                                 <h4 class="text-lg font-medium text-white" data-i18n="settings-lang-label">System Language</h4>
                                 <p class="text-sm text-slate-400" data-i18n="settings-lang-desc">Choose the primary language for the interface.</p>
                             </div>
-                            <select id="setting-language" onchange="changeLanguage()" class="bg-slate-800 border border-slate-700 text-white text-md rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-3.5 outline-none font-bold">
+                            <select id="setting-language" onchange="changeLanguage()" class="w-full sm:w-auto bg-slate-800 border border-slate-700 text-white text-md rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-3.5 outline-none font-bold">
                                 <option value="en">English</option>
                                 <option value="fr-CA">Français (Canada)</option>
                                 <option value="ru">Русский</option>
@@ -371,7 +398,7 @@
                     </div>
 
                     <!-- Themes / Preferences -->
-                    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-8 shadow-xl">
+                    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 md:p-8 shadow-xl">
                         <h3 class="text-xl font-semibold text-white mb-6 flex items-center gap-3">
                             <i data-lucide="sliders" class="w-6 h-6 text-blue-400"></i> <span data-i18n="settings-pref-title">System Preferences</span>
                         </h3>
@@ -407,6 +434,21 @@
                                     <div><h4 class="text-md font-medium text-white" data-i18n="mode-canada">Canada Mode</h4></div>
                                     <input type="checkbox" id="setting-canada" onchange="toggleMode('canadaMode')" class="toggle-checkbox w-6 h-6">
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- App Info -->
+                    <div class="bg-slate-900/50 border border-slate-700/50 rounded-2xl p-6 md:p-10">
+                        <div class="flex items-start gap-6">
+                            <div class="bg-blue-500/10 p-4 rounded-2xl shrink-0">
+                                <i data-lucide="info" class="w-8 h-8 text-blue-400"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-md font-bold text-white mb-2 tracking-widest uppercase" data-i18n="app-version">Operational Logic & Information Validation Interface v1.5.0</h4>
+                                <p class="text-sm text-slate-400 leading-relaxed max-w-2xl" data-i18n="app-info">
+                                    This tool is designed for private operational mapping and validation. All telemetry parsing and string decoding happens locally.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -1470,8 +1512,25 @@ United States,Washington,"46.32996, -124.05756","Futel Phone - 3728 J Pl., Seavi
         let tableData = [];
         let favourites = [];
         let currentDecodedId = null;
+        let isSidebarOpen = false;
         let systemSettings = { showDump: true, language: 'en', dumpLocked: false, dyslexiaMode: false, invertedMode: false, phreakMode: false, canadaMode: false };
         let mapInstance = null;
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('main-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            isSidebarOpen = !isSidebarOpen;
+            
+            if(isSidebarOpen) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                overlay.classList.add('opacity-100');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                overlay.classList.remove('opacity-100');
+            }
+        }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tool-section').forEach(sec => sec.classList.remove('active'));
@@ -1484,6 +1543,7 @@ United States,Washington,"46.32996, -124.05756","Futel Phone - 3728 J Pl., Seavi
             
             if(tabId === 'favourites') renderFavourites();
             if(tabId === 'foneline') renderFoneLine();
+            if(window.innerWidth < 768 && isSidebarOpen) toggleSidebar();
             translateUI();
         }
 
@@ -1496,7 +1556,9 @@ United States,Washington,"46.32996, -124.05756","Futel Phone - 3728 J Pl., Seavi
             });
             const activeSection = Array.from(document.querySelectorAll('.tool-section')).find(s => s.classList.contains('active'));
             if (activeSection) {
-                document.getElementById('current-tool-title').textContent = dict[`nav-${activeSection.id}`] || dict['nav-dashboard'];
+                const title = dict[`nav-${activeSection.id}`] || dict['nav-dashboard'];
+                document.getElementById('current-tool-title').textContent = title;
+                document.getElementById('mobile-tool-title').textContent = title;
             }
             updateFavBtnUI();
         }
@@ -1634,18 +1696,8 @@ United States,Washington,"46.32996, -124.05756","Futel Phone - 3728 J Pl., Seavi
             const body = document.getElementById('foneline-list-body');
             const empty = document.getElementById('foneline-empty-msg');
             body.innerHTML = '';
-            
-            // Filter all database entries for "emergency"
-            const emergencyAssets = tableData.filter(d => 
-                d.loc.toLowerCase().includes('emergency') || 
-                d.id.toLowerCase().includes('emergency')
-            );
-
-            if(emergencyAssets.length === 0) {
-                empty.classList.remove('hidden');
-                return;
-            }
-            
+            const emergencyAssets = tableData.filter(d => d.loc.toLowerCase().includes('emergency') || d.id.toLowerCase().includes('emergency'));
+            if(emergencyAssets.length === 0) { empty.classList.remove('hidden'); return; }
             empty.classList.add('hidden');
             emergencyAssets.forEach(asset => {
                 const tr = document.createElement('tr');
@@ -1655,9 +1707,7 @@ United States,Washington,"46.32996, -124.05756","Futel Phone - 3728 J Pl., Seavi
                     <td class="px-6 py-4 text-sm text-slate-300">${asset.country}</td>
                     <td class="px-6 py-4 text-sm text-slate-300">${cityMap[asset.id.split('-')[2]] || asset.id.split('-')[2]}</td>
                     <td class="px-6 py-4 text-sm text-red-300 italic truncate max-w-xs">${asset.loc}</td>
-                    <td class="px-6 py-4 text-right">
-                        <button onclick="event.stopPropagation(); processDecoder('${asset.id}'); switchTab('decoder');" class="bg-red-600/20 text-red-400 px-3 py-1 rounded-lg text-xs font-bold hover:bg-red-600 hover:text-white transition-all">TRACE</button>
-                    </td>
+                    <td class="px-6 py-4 text-right"><button onclick="event.stopPropagation(); processDecoder('${asset.id}'); switchTab('decoder');" class="bg-red-600/20 text-red-400 px-3 py-1 rounded-lg text-xs font-bold hover:bg-red-600 hover:text-white transition-all">TRACE</button></td>
                 `;
                 tr.onclick = () => { processDecoder(asset.id); switchTab('decoder'); };
                 body.appendChild(tr);
@@ -1694,6 +1744,7 @@ United States,Washington,"46.32996, -124.05756","Futel Phone - 3728 J Pl., Seavi
         initData();
         switchTab('dashboard');
         translateUI();
+        lucide.createIcons();
     </script>
 </body>
 </html>
